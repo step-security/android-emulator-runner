@@ -4,6 +4,13 @@ export const VALID_CHANNELS: Array<string> = ['stable', 'beta', 'dev', 'canary']
 export const MIN_PORT = 5554;
 export const MAX_PORT = 5584;
 
+const AVD_NAME_PATTERN = /^[A-Za-z0-9._-]+$/;
+const PROFILE_PATTERN = /^[A-Za-z0-9 ._()-]+$/;
+const SDCARD_PATH_OR_SIZE_PATTERN = /^[A-Za-z0-9./_-]+$/;
+const CORES_PATTERN = /^[0-9]+$/;
+const MEMORY_SIZE_PATTERN = /^[0-9]+[KkMmGg]?$/;
+const EMULATOR_OPTIONS_PATTERN = /^[A-Za-z0-9 ._:=/,@+-]+$/;
+
 export function playstoreTargetSubstitution(target: string): string {
   // "playstore" is an allowed shorthand for "google_apis_playstore" images
   // this is idempotent - return same even if run multiple times on same target
@@ -71,6 +78,48 @@ export function checkEmulatorBuild(emulatorBuild: string): void {
 
 function isValidBoolean(value: string): boolean {
   return value === 'true' || value === 'false';
+}
+
+export function checkAvdName(avdName: string): void {
+  if (!AVD_NAME_PATTERN.test(avdName)) {
+    throw new Error(`Invalid avd-name '${avdName}'. Allowed characters: letters, digits, '.', '_', '-'.`);
+  }
+}
+
+export function checkProfile(profile: string): void {
+  if (profile.trim() !== '' && !PROFILE_PATTERN.test(profile)) {
+    throw new Error(`Invalid profile '${profile}'. Allowed characters: letters, digits, spaces, '.', '_', '-', '(', ')'.`);
+  }
+}
+
+export function checkSdcardPathOrSize(sdcardPathOrSize: string): void {
+  if (sdcardPathOrSize.trim() !== '' && !SDCARD_PATH_OR_SIZE_PATTERN.test(sdcardPathOrSize)) {
+    throw new Error(`Invalid sdcard-path-or-size '${sdcardPathOrSize}'. Allowed characters: letters, digits, '/', '.', '_', '-'.`);
+  }
+}
+
+export function checkCores(cores: string): void {
+  if (cores.trim() !== '' && !CORES_PATTERN.test(cores)) {
+    throw new Error(`Invalid cores '${cores}'. Must be a positive integer.`);
+  }
+}
+
+export function checkRamSize(ramSize: string): void {
+  if (ramSize.trim() !== '' && !MEMORY_SIZE_PATTERN.test(ramSize)) {
+    throw new Error(`Invalid ram-size '${ramSize}'. Must be a number, optionally with K, M, or G suffix.`);
+  }
+}
+
+export function checkHeapSize(heapSize: string): void {
+  if (heapSize.trim() !== '' && !MEMORY_SIZE_PATTERN.test(heapSize)) {
+    throw new Error(`Invalid heap-size '${heapSize}'. Must be a number, optionally with K, M, or G suffix.`);
+  }
+}
+
+export function checkEmulatorOptions(emulatorOptions: string): void {
+  if (emulatorOptions.trim() !== '' && !EMULATOR_OPTIONS_PATTERN.test(emulatorOptions)) {
+    throw new Error(`Invalid emulator-options '${emulatorOptions}'. Allowed characters: letters, digits, spaces, '.', '_', '-', ':', '=', '/', ',', '@', '+'.`);
+  }
 }
 
 export function checkDiskSize(diskSize: string): void {

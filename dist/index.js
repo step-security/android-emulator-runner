@@ -34056,12 +34056,25 @@ exports.checkDisableSpellchecker = checkDisableSpellchecker;
 exports.checkDisableLinuxHardwareAcceleration = checkDisableLinuxHardwareAcceleration;
 exports.checkEnableHardwareKeyboard = checkEnableHardwareKeyboard;
 exports.checkEmulatorBuild = checkEmulatorBuild;
+exports.checkAvdName = checkAvdName;
+exports.checkProfile = checkProfile;
+exports.checkSdcardPathOrSize = checkSdcardPathOrSize;
+exports.checkCores = checkCores;
+exports.checkRamSize = checkRamSize;
+exports.checkHeapSize = checkHeapSize;
+exports.checkEmulatorOptions = checkEmulatorOptions;
 exports.checkDiskSize = checkDiskSize;
 exports.MIN_API_LEVEL = 15;
 exports.VALID_ARCHS = ['x86', 'x86_64', 'arm64-v8a'];
 exports.VALID_CHANNELS = ['stable', 'beta', 'dev', 'canary'];
 exports.MIN_PORT = 5554;
 exports.MAX_PORT = 5584;
+const AVD_NAME_PATTERN = /^[A-Za-z0-9._-]+$/;
+const PROFILE_PATTERN = /^[A-Za-z0-9 ._()-]+$/;
+const SDCARD_PATH_OR_SIZE_PATTERN = /^[A-Za-z0-9./_-]+$/;
+const CORES_PATTERN = /^[0-9]+$/;
+const MEMORY_SIZE_PATTERN = /^[0-9]+[KkMmGg]?$/;
+const EMULATOR_OPTIONS_PATTERN = /^[A-Za-z0-9 ._:=/,@+-]+$/;
 function playstoreTargetSubstitution(target) {
     // "playstore" is an allowed shorthand for "google_apis_playstore" images
     // this is idempotent - return same even if run multiple times on same target
@@ -34121,6 +34134,41 @@ function checkEmulatorBuild(emulatorBuild) {
 }
 function isValidBoolean(value) {
     return value === 'true' || value === 'false';
+}
+function checkAvdName(avdName) {
+    if (!AVD_NAME_PATTERN.test(avdName)) {
+        throw new Error(`Invalid avd-name '${avdName}'. Allowed characters: letters, digits, '.', '_', '-'.`);
+    }
+}
+function checkProfile(profile) {
+    if (profile.trim() !== '' && !PROFILE_PATTERN.test(profile)) {
+        throw new Error(`Invalid profile '${profile}'. Allowed characters: letters, digits, spaces, '.', '_', '-', '(', ')'.`);
+    }
+}
+function checkSdcardPathOrSize(sdcardPathOrSize) {
+    if (sdcardPathOrSize.trim() !== '' && !SDCARD_PATH_OR_SIZE_PATTERN.test(sdcardPathOrSize)) {
+        throw new Error(`Invalid sdcard-path-or-size '${sdcardPathOrSize}'. Allowed characters: letters, digits, '/', '.', '_', '-'.`);
+    }
+}
+function checkCores(cores) {
+    if (cores.trim() !== '' && !CORES_PATTERN.test(cores)) {
+        throw new Error(`Invalid cores '${cores}'. Must be a positive integer.`);
+    }
+}
+function checkRamSize(ramSize) {
+    if (ramSize.trim() !== '' && !MEMORY_SIZE_PATTERN.test(ramSize)) {
+        throw new Error(`Invalid ram-size '${ramSize}'. Must be a number, optionally with K, M, or G suffix.`);
+    }
+}
+function checkHeapSize(heapSize) {
+    if (heapSize.trim() !== '' && !MEMORY_SIZE_PATTERN.test(heapSize)) {
+        throw new Error(`Invalid heap-size '${heapSize}'. Must be a number, optionally with K, M, or G suffix.`);
+    }
+}
+function checkEmulatorOptions(emulatorOptions) {
+    if (emulatorOptions.trim() !== '' && !EMULATOR_OPTIONS_PATTERN.test(emulatorOptions)) {
+        throw new Error(`Invalid emulator-options '${emulatorOptions}'. Allowed characters: letters, digits, spaces, '.', '_', '-', ':', '=', '/', ',', '@', '+'.`);
+    }
 }
 function checkDiskSize(diskSize) {
     // Disk size can be empty - the default value
@@ -34263,24 +34311,30 @@ async function run() {
         console.log(`CPU architecture: ${arch}`);
         // Hardware profile used for creating the AVD
         const profile = core.getInput('profile');
+        (0, input_validator_1.checkProfile)(profile);
         console.log(`Hardware profile: ${profile}`);
         // Number of cores to use for emulator
         const cores = core.getInput('cores');
+        (0, input_validator_1.checkCores)(cores);
         console.log(`Cores: ${cores}`);
         // RAM to use for AVD
         const ramSize = core.getInput('ram-size');
+        (0, input_validator_1.checkRamSize)(ramSize);
         console.log(`RAM size: ${ramSize}`);
         // Heap size to use for AVD
         const heapSize = core.getInput('heap-size');
+        (0, input_validator_1.checkHeapSize)(heapSize);
         console.log(`Heap size: ${heapSize}`);
         // SD card path or size used for creating the AVD
         const sdcardPathOrSize = core.getInput('sdcard-path-or-size');
+        (0, input_validator_1.checkSdcardPathOrSize)(sdcardPathOrSize);
         console.log(`SD card path or size: ${sdcardPathOrSize}`);
         const diskSize = core.getInput('disk-size');
         (0, input_validator_1.checkDiskSize)(diskSize);
         console.log(`Disk size: ${diskSize}`);
         // custom name used for creating the AVD
         const avdName = core.getInput('avd-name');
+        (0, input_validator_1.checkAvdName)(avdName);
         console.log(`AVD name: ${avdName}`);
         // force AVD creation
         const forceAvdCreationInput = core.getInput('force-avd-creation');
@@ -34296,6 +34350,7 @@ async function run() {
         console.log(`emulator port: ${port}`);
         // emulator options
         const emulatorOptions = core.getInput('emulator-options').trim();
+        (0, input_validator_1.checkEmulatorOptions)(emulatorOptions);
         console.log(`emulator options: ${emulatorOptions}`);
         // disable animations
         const disableAnimationsInput = core.getInput('disable-animations');
@@ -34490,11 +34545,20 @@ const core = __importStar(__nccwpck_require__(7484));
 const exec = __importStar(__nccwpck_require__(5236));
 const io = __importStar(__nccwpck_require__(4994));
 const tc = __importStar(__nccwpck_require__(3472));
+const crypto = __importStar(__nccwpck_require__(6982));
 const fs = __importStar(__nccwpck_require__(9896));
 const BUILD_TOOLS_VERSION = '36.0.0';
 // SDK command-line tools 20.0
 const CMDLINE_TOOLS_URL_MAC = 'https://dl.google.com/android/repository/commandlinetools-mac-14742923_latest.zip';
 const CMDLINE_TOOLS_URL_LINUX = 'https://dl.google.com/android/repository/commandlinetools-linux-14742923_latest.zip';
+// SHA-256 digests for the pinned cmdline-tools zips above. Update when the build number changes.
+const CMDLINE_TOOLS_SHA256_MAC = 'ed304c5ede3718541e4f978e4ae870a4d853db74af6c16d920588d48523b9dee';
+const CMDLINE_TOOLS_SHA256_LINUX = '04453066b540409d975c676d781da1477479dde3761310f1a7eb92a1dfb15af7';
+function sha256File(filePath) {
+    const hash = crypto.createHash('sha256');
+    hash.update(fs.readFileSync(filePath));
+    return hash.digest('hex');
+}
 /**
  * Installs & updates the Android SDK for the macOS platform, including SDK platform for the chosen API level, latest build tools, platform tools, Android Emulator,
  * and the system image for the chosen API level, CPU arch, and target.
@@ -34508,7 +34572,12 @@ async function installAndroidSdk(apiLevel, systemImageApiLevel, target, arch, ch
         if (!fs.existsSync(cmdlineToolsPath)) {
             console.log('Installing new cmdline-tools.');
             const sdkUrl = isOnMac ? CMDLINE_TOOLS_URL_MAC : CMDLINE_TOOLS_URL_LINUX;
+            const expectedSha256 = isOnMac ? CMDLINE_TOOLS_SHA256_MAC : CMDLINE_TOOLS_SHA256_LINUX;
             const downloadPath = await tc.downloadTool(sdkUrl);
+            const actualSha256 = sha256File(downloadPath);
+            if (actualSha256 !== expectedSha256) {
+                core.warning(`cmdline-tools SHA-256 mismatch for ${sdkUrl}. Expected ${expectedSha256}, got ${actualSha256}. Continuing install.`);
+            }
             await tc.extractZip(downloadPath, cmdlineToolsPath);
             await io.mv(`${cmdlineToolsPath}/cmdline-tools`, `${cmdlineToolsPath}/latest`);
         }
