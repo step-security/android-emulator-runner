@@ -2,15 +2,22 @@ import * as core from '@actions/core';
 import { installAndroidSdk } from './sdk-installer';
 import {
   checkArch,
+  checkAvdName,
+  checkCores,
   checkDisableAnimations,
   checkEmulatorBuild,
+  checkEmulatorOptions,
   checkDisableSpellchecker,
   checkDisableLinuxHardwareAcceleration,
   checkForceAvdCreation,
   checkChannel,
   checkEnableHardwareKeyboard,
   checkDiskSize,
+  checkHeapSize,
   checkPort,
+  checkProfile,
+  checkRamSize,
+  checkSdcardPathOrSize,
   playstoreTargetSubstitution,
   MIN_PORT,
 } from './input-validator';
@@ -101,22 +108,27 @@ async function run() {
 
     // Hardware profile used for creating the AVD
     const profile = core.getInput('profile');
+    checkProfile(profile);
     console.log(`Hardware profile: ${profile}`);
 
     // Number of cores to use for emulator
     const cores = core.getInput('cores');
+    checkCores(cores);
     console.log(`Cores: ${cores}`);
 
     // RAM to use for AVD
     const ramSize = core.getInput('ram-size');
+    checkRamSize(ramSize);
     console.log(`RAM size: ${ramSize}`);
 
     // Heap size to use for AVD
     const heapSize = core.getInput('heap-size');
+    checkHeapSize(heapSize);
     console.log(`Heap size: ${heapSize}`);
 
     // SD card path or size used for creating the AVD
     const sdcardPathOrSize = core.getInput('sdcard-path-or-size');
+    checkSdcardPathOrSize(sdcardPathOrSize);
     console.log(`SD card path or size: ${sdcardPathOrSize}`);
 
     const diskSize = core.getInput('disk-size');
@@ -125,6 +137,7 @@ async function run() {
 
     // custom name used for creating the AVD
     const avdName = core.getInput('avd-name');
+    checkAvdName(avdName);
     console.log(`AVD name: ${avdName}`);
 
     // force AVD creation
@@ -144,6 +157,7 @@ async function run() {
 
     // emulator options
     const emulatorOptions = core.getInput('emulator-options').trim();
+    checkEmulatorOptions(emulatorOptions);
     console.log(`emulator options: ${emulatorOptions}`);
 
     // disable animations

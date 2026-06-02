@@ -213,6 +213,167 @@ describe('emulator-build validator tests', () => {
   });
 });
 
+describe('avd-name validator tests', () => {
+  it('Accepts typical AVD names', () => {
+    expect(() => validator.checkAvdName('test')).not.toThrow();
+    expect(() => validator.checkAvdName('Pixel_7_Pro')).not.toThrow();
+    expect(() => validator.checkAvdName('avd-1.2')).not.toThrow();
+  });
+
+  it('Rejects empty avd-name', () => {
+    expect(() => validator.checkAvdName('')).toThrowError(`Invalid avd-name ''.`);
+  });
+
+  it('Rejects shell metacharacters', () => {
+    expect(() => validator.checkAvdName(`test'; whoami; echo '`)).toThrow();
+    expect(() => validator.checkAvdName('test"; rm -rf /; echo "')).toThrow();
+    expect(() => validator.checkAvdName('test$(whoami)')).toThrow();
+    expect(() => validator.checkAvdName('test`whoami`')).toThrow();
+    expect(() => validator.checkAvdName('test|cat /etc/passwd')).toThrow();
+    expect(() => validator.checkAvdName('test name with space')).toThrow();
+  });
+});
+
+describe('profile validator tests', () => {
+  it('Accepts empty profile (optional input)', () => {
+    expect(() => validator.checkProfile('')).not.toThrow();
+    expect(() => validator.checkProfile('   ')).not.toThrow();
+  });
+
+  it('Accepts typical profile names', () => {
+    expect(() => validator.checkProfile('Galaxy Nexus')).not.toThrow();
+    expect(() => validator.checkProfile('pixel_7_pro')).not.toThrow();
+    expect(() => validator.checkProfile('7in WSVGA (Tablet)')).not.toThrow();
+  });
+
+  it('Rejects shell metacharacters', () => {
+    expect(() => validator.checkProfile(`Galaxy'; whoami; echo '`)).toThrow();
+    expect(() => validator.checkProfile('p$(whoami)')).toThrow();
+    expect(() => validator.checkProfile('p`whoami`')).toThrow();
+    expect(() => validator.checkProfile('p|cat')).toThrow();
+    expect(() => validator.checkProfile('p;ls')).toThrow();
+  });
+});
+
+describe('sdcard-path-or-size validator tests', () => {
+  it('Accepts empty value (optional input)', () => {
+    expect(() => validator.checkSdcardPathOrSize('')).not.toThrow();
+    expect(() => validator.checkSdcardPathOrSize('   ')).not.toThrow();
+  });
+
+  it('Accepts size values', () => {
+    expect(() => validator.checkSdcardPathOrSize('100M')).not.toThrow();
+    expect(() => validator.checkSdcardPathOrSize('1000K')).not.toThrow();
+    expect(() => validator.checkSdcardPathOrSize('1G')).not.toThrow();
+  });
+
+  it('Accepts path values', () => {
+    expect(() => validator.checkSdcardPathOrSize('/path/to/sdcard')).not.toThrow();
+    expect(() => validator.checkSdcardPathOrSize('./relative/path-1.img')).not.toThrow();
+  });
+
+  it('Rejects shell metacharacters', () => {
+    expect(() => validator.checkSdcardPathOrSize(`100M'; whoami; echo '`)).toThrow();
+    expect(() => validator.checkSdcardPathOrSize('$(whoami)')).toThrow();
+    expect(() => validator.checkSdcardPathOrSize('`whoami`')).toThrow();
+    expect(() => validator.checkSdcardPathOrSize('100M|cat')).toThrow();
+    expect(() => validator.checkSdcardPathOrSize('100M;ls')).toThrow();
+    expect(() => validator.checkSdcardPathOrSize('/path with space')).toThrow();
+  });
+});
+
+describe('cores validator tests', () => {
+  it('Accepts empty value (uses default)', () => {
+    expect(() => validator.checkCores('')).not.toThrow();
+  });
+
+  it('Accepts positive integers', () => {
+    expect(() => validator.checkCores('1')).not.toThrow();
+    expect(() => validator.checkCores('2')).not.toThrow();
+    expect(() => validator.checkCores('16')).not.toThrow();
+  });
+
+  it('Rejects shell metacharacters and non-integer values', () => {
+    expect(() => validator.checkCores(`2'; whoami; #`)).toThrow();
+    expect(() => validator.checkCores('2$(whoami)')).toThrow();
+    expect(() => validator.checkCores('2`whoami`')).toThrow();
+    expect(() => validator.checkCores('2|cat')).toThrow();
+    expect(() => validator.checkCores('2;ls')).toThrow();
+    expect(() => validator.checkCores('-2')).toThrow();
+    expect(() => validator.checkCores('2.5')).toThrow();
+    expect(() => validator.checkCores('two')).toThrow();
+  });
+});
+
+describe('ram-size validator tests', () => {
+  it('Accepts empty value (optional input)', () => {
+    expect(() => validator.checkRamSize('')).not.toThrow();
+  });
+
+  it('Accepts size values', () => {
+    expect(() => validator.checkRamSize('2048')).not.toThrow();
+    expect(() => validator.checkRamSize('2048M')).not.toThrow();
+    expect(() => validator.checkRamSize('2048m')).not.toThrow();
+    expect(() => validator.checkRamSize('2K')).not.toThrow();
+    expect(() => validator.checkRamSize('1G')).not.toThrow();
+  });
+
+  it('Rejects shell metacharacters and malformed sizes', () => {
+    expect(() => validator.checkRamSize(`2048M'; whoami; #`)).toThrow();
+    expect(() => validator.checkRamSize('$(whoami)')).toThrow();
+    expect(() => validator.checkRamSize('`whoami`')).toThrow();
+    expect(() => validator.checkRamSize('2048M|cat')).toThrow();
+    expect(() => validator.checkRamSize('2048MM')).toThrow();
+    expect(() => validator.checkRamSize('2048T')).toThrow();
+  });
+});
+
+describe('heap-size validator tests', () => {
+  it('Accepts empty value (optional input)', () => {
+    expect(() => validator.checkHeapSize('')).not.toThrow();
+  });
+
+  it('Accepts size values', () => {
+    expect(() => validator.checkHeapSize('512')).not.toThrow();
+    expect(() => validator.checkHeapSize('512M')).not.toThrow();
+    expect(() => validator.checkHeapSize('512m')).not.toThrow();
+    expect(() => validator.checkHeapSize('1G')).not.toThrow();
+  });
+
+  it('Rejects shell metacharacters and malformed sizes', () => {
+    expect(() => validator.checkHeapSize(`512M'; whoami; #`)).toThrow();
+    expect(() => validator.checkHeapSize('$(whoami)')).toThrow();
+    expect(() => validator.checkHeapSize('`whoami`')).toThrow();
+    expect(() => validator.checkHeapSize('512M;ls')).toThrow();
+    expect(() => validator.checkHeapSize('512MM')).toThrow();
+  });
+});
+
+describe('emulator-options validator tests', () => {
+  it('Accepts empty value', () => {
+    expect(() => validator.checkEmulatorOptions('')).not.toThrow();
+  });
+
+  it('Accepts default and typical emulator options', () => {
+    expect(() => validator.checkEmulatorOptions('-no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim')).not.toThrow();
+    expect(() => validator.checkEmulatorOptions('-no-snapshot-save -camera-back emulated')).not.toThrow();
+    expect(() => validator.checkEmulatorOptions('-skin 1080x1920')).not.toThrow();
+    expect(() => validator.checkEmulatorOptions('-prop name=value')).not.toThrow();
+    expect(() => validator.checkEmulatorOptions('-feature -Vulkan,-GLDirectMem')).not.toThrow();
+    expect(() => validator.checkEmulatorOptions('-http-proxy http://user:pass@host:8080')).not.toThrow();
+  });
+
+  it('Rejects shell metacharacters', () => {
+    expect(() => validator.checkEmulatorOptions('-no-window; whoami')).toThrow();
+    expect(() => validator.checkEmulatorOptions('-no-window && whoami')).toThrow();
+    expect(() => validator.checkEmulatorOptions('-no-window | cat')).toThrow();
+    expect(() => validator.checkEmulatorOptions('-no-window $(whoami)')).toThrow();
+    expect(() => validator.checkEmulatorOptions('-no-window `whoami`')).toThrow();
+    expect(() => validator.checkEmulatorOptions(`-no-window'; whoami; echo '`)).toThrow();
+    expect(() => validator.checkEmulatorOptions('-no-window > /tmp/out')).toThrow();
+  });
+});
+
 describe('checkDiskSize validator tests', () => {
   it('Empty size is acceptable, means default', () => {
     const func = () => {

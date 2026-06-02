@@ -2,12 +2,23 @@ import * as core from '@actions/core';
 import * as exec from '@actions/exec';
 import * as io from '@actions/io';
 import * as tc from '@actions/tool-cache';
+import * as crypto from 'crypto';
 import * as fs from 'fs';
 
 const BUILD_TOOLS_VERSION = '36.0.0';
 // SDK command-line tools 20.0
 const CMDLINE_TOOLS_URL_MAC = 'https://dl.google.com/android/repository/commandlinetools-mac-14742923_latest.zip';
 const CMDLINE_TOOLS_URL_LINUX = 'https://dl.google.com/android/repository/commandlinetools-linux-14742923_latest.zip';
+
+// SHA-256 digests for the pinned cmdline-tools zips above. Update when the build number changes.
+const CMDLINE_TOOLS_SHA256_MAC = 'ed304c5ede3718541e4f978e4ae870a4d853db74af6c16d920588d48523b9dee';
+const CMDLINE_TOOLS_SHA256_LINUX = '04453066b540409d975c676d781da1477479dde3761310f1a7eb92a1dfb15af7';
+
+function sha256File(filePath: string): string {
+  const hash = crypto.createHash('sha256');
+  hash.update(fs.readFileSync(filePath));
+  return hash.digest('hex');
+}
 
 /**
  * Installs & updates the Android SDK for the macOS platform, including SDK platform for the chosen API level, latest build tools, platform tools, Android Emulator,
@@ -32,7 +43,12 @@ export async function installAndroidSdk(
     if (!fs.existsSync(cmdlineToolsPath)) {
       console.log('Installing new cmdline-tools.');
       const sdkUrl = isOnMac ? CMDLINE_TOOLS_URL_MAC : CMDLINE_TOOLS_URL_LINUX;
+      const expectedSha256 = isOnMac ? CMDLINE_TOOLS_SHA256_MAC : CMDLINE_TOOLS_SHA256_LINUX;
       const downloadPath = await tc.downloadTool(sdkUrl);
+      const actualSha256 = sha256File(downloadPath);
+      if (actualSha256 !== expectedSha256) {
+        core.warning(`cmdline-tools SHA-256 mismatch for ${sdkUrl}. Expected ${expectedSha256}, got ${actualSha256}. Continuing install.`);
+      }
       await tc.extractZip(downloadPath, cmdlineToolsPath);
       await io.mv(`${cmdlineToolsPath}/cmdline-tools`, `${cmdlineToolsPath}/latest`);
     }
