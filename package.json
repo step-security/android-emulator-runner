@@ -3,9 +3,9 @@
   "version": "2.37.0",
   "private": true,
   "description": "A GitHub Action for installing, configuring and running Android Emulators on hardware-accelerated runners.",
-  "main": "dist/main.js",
+  "main": "dist/index.js",
   "scripts": {
-    "build": "tsc",
+    "build": "ncc build src/main.ts -o dist --source-map --license licenses.txt",
     "test": "tsc --noEmit && jest",
     "lint": "eslint . --ext .ts"
   },
@@ -27,15 +27,14 @@
     "@actions/core": "^1.10.0",
     "@actions/exec": "^1.1.1",
     "@actions/tool-cache": "^2.0.1",
-    "axios": "^1.16.0",
-    "minimist": "^1.2.7",
-    "set-value": "^4.1.0"
+    "axios": "^1.16.0"
   },
   "devDependencies": {
     "@types/jest": "^29.5.12",
     "@types/node": "^24.1.0",
     "@typescript-eslint/eslint-plugin": "^8.57.0",
     "@typescript-eslint/parser": "^8.57.0",
+    "@vercel/ncc": "^0.38.1",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import": "^2.29.1",

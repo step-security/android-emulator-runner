@@ -75,4 +75,4 @@ inputs:
     description: 'custom script to run after creating the AVD and before launching the emulator - e.g. `./adjust-emulator-configs.sh`'
 runs:
   using: 'node24'
-  main: 'dist/main.js'
+  main: 'dist/index.js'
