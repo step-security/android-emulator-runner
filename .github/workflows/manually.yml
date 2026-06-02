@@ -55,7 +55,7 @@ jobs:
         distribution: 'zulu'
         java-version: 25
 
-    - uses: gradle/actions/setup-gradle@v5
+    - uses: step-security/gradle-actions/setup-gradle@v5
 
     - name: enable KVM for linux runners
       if: runner.os == 'Linux'

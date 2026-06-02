@@ -1,6 +1,6 @@
 name: 'Android Emulator Runner'
 description: 'Installs, configures and starts an Android Emulator directly on hardware-accelerated runners.'
-author: 'Reactive Circus'
+author: 'step-security'
 branding:
   icon: 'smartphone'
   color: 'green'
@@ -75,4 +75,4 @@ inputs:
     description: 'custom script to run after creating the AVD and before launching the emulator - e.g. `./adjust-emulator-configs.sh`'
 runs:
   using: 'node24'
-  main: 'lib/main.js'
+  main: 'dist/main.js'

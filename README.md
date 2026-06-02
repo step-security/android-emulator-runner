@@ -3,7 +3,7 @@
 # GitHub Action - Android Emulator Runner
 
 <p align="left">
-  <a href="https://github.com/ReactiveCircus/android-emulator-runner"><img alt="GitHub Actions status" src="https://github.com/ReactiveCircus/android-emulator-runner/workflows/Main%20workflow/badge.svg"></a>
+  <a href="https://github.com/step-security/android-emulator-runner"><img alt="GitHub Actions status" src="https://github.com/step-security/android-emulator-runner/workflows/Main%20workflow/badge.svg"></a>
 </p>
 
 A GitHub Action for installing, configuring and running hardware-accelerated Android Emulators on Linux and macOS virtual machines.
@@ -28,7 +28,7 @@ GitHub's [larger Linux runners support running hardware accelerated emulators](h
 
 According to [this documentation](https://developer.android.com/studio/run/emulator-acceleration#vm-mac), "on Mac OS X v10.10 Yosemite and higher, the Android Emulator uses the built-in [Hypervisor.Framework](https://developer.apple.com/documentation/hypervisor) by default, and falls back to using Intel HAXM if Hypervisor.Framework fails to initialize." This means that **HAXM is only needed to achieve VM Acceleration if this default Hypervisor is not available on macOS machines.**
 
-**Note**: Manually enabling and downloading HAXM is not recommended because it is redundant and not needed (see above), and for users of macOS 10.13 High Sierra and higher: macOS 10.13 [disables installation of kernel extensions by default](https://developer.apple.com/library/archive/technotes/tn2459/_index.html#//apple_ref/doc/uid/DTS40017658). Because Intel HAXM is a kernel extension, we would need to manually enable its installation on the base runner VM. Furthermore, manually trying to install HAXM on a Github Runner [brings up a popup](https://github.com/ReactiveCircus/android-emulator-runner/discussions/286#discussioncomment-4026120) which further hinders tests from running.
+**Note**: Manually enabling and downloading HAXM is not recommended because it is redundant and not needed (see above), and for users of macOS 10.13 High Sierra and higher: macOS 10.13 [disables installation of kernel extensions by default](https://developer.apple.com/library/archive/technotes/tn2459/_index.html#//apple_ref/doc/uid/DTS40017658). Because Intel HAXM is a kernel extension, we would need to manually enable its installation on the base runner VM. Furthermore, manually trying to install HAXM on a Github Runner [brings up a popup](https://github.com/step-security/android-emulator-runner/discussions/286#discussioncomment-4026120) which further hinders tests from running.
 
 ## Purpose
 
@@ -148,7 +148,7 @@ jobs:
 
 We can significantly reduce emulator startup time by setting up AVD snapshot caching:
 
-1. add a `gradle/actions/setup-gradle@v5` step for caching Gradle, more details see [#229](https://github.com/ReactiveCircus/android-emulator-runner/issues/229)
+1. add a `step-security/gradle-actions/setup-gradle@v5` step for caching Gradle
 2. add an `actions/cache@v5` step for caching the `avd`
 3. add a `step-security/android-emulator-runner@v2` step to generate a clean snapshot - specify `emulator-options` without `no-snapshot`
 4. add another `step-security/android-emulator-runner@v2` step to run your tests using existing AVD / snapshot - specify `emulator-options` with `no-snapshot-save`
@@ -234,46 +234,3 @@ jobs:
 | `pre-emulator-launch-script` | Optional | N/A | Custom script to run after creating the AVD and before launching the emulator - e.g. `./adjust-emulator-configs.sh` |
 
 Default `emulator-options`: `-no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim`.
-
-## Who is using Android Emulator Runner?
-
-These are some of the open-source projects using (or used) **Android Emulator Runner**:
-
-- [coil-kt/coil](https://github.com/coil-kt/coil/blob/master/.github/workflows)
-- [cashapp/sqldelight](https://github.com/cashapp/sqldelight/blob/master/.github/workflows)
-- [square/workflow-kotlin](https://github.com/square/workflow-kotlin/tree/main/.github/workflows)
-- [square/retrofit](https://github.com/square/retrofit/blob/master/.github/workflows)
-- [natario1/CameraView](https://github.com/natario1/CameraView/tree/master/.github/workflows)
-- [natario1/Transcoder](https://github.com/natario1/Transcoder/tree/master/.github/workflows)
-- [chrisbanes/insetter](https://github.com/chrisbanes/insetter/tree/main/.github/workflows)
-- [slackhq/keeper](https://github.com/slackhq/keeper/tree/main/.github/workflows)
-- [android/compose-samples](https://github.com/android/compose-samples/tree/main/.github/workflows)
-- [ReactiveCircus/streamlined](https://github.com/ReactiveCircus/streamlined/tree/main/.github/workflows)
-- [ReactiveCircus/FlowBinding](https://github.com/ReactiveCircus/FlowBinding/tree/main/.github/workflows)
-- [JakeWharton/RxBinding](https://github.com/JakeWharton/RxBinding/tree/master/.github/workflows)
-- [vinaygaba/Learn-Jetpack-Compose-By-Example](https://github.com/vinaygaba/Learn-Jetpack-Compose-By-Example/tree/master/.github/workflows)
-- [ashishb/adb-enhanced](https://github.com/ashishb/adb-enhanced/tree/master/.github/workflows)
-- [vgaidarji/ci-matters](https://github.com/vgaidarji/ci-matters/blob/master/.github/workflows/main.yaml)
-- [simpledotorg/simple-android](https://github.com/simpledotorg/simple-android/tree/master/.github/workflows)
-- [cashapp/copper](https://github.com/cashapp/copper/blob/trunk/.github/workflows/build.yaml)
-- [square/radiography](https://github.com/square/radiography/blob/main/.github/workflows/android.yml)
-- [Shopify/android-testify](https://github.com/Shopify/android-testify/blob/master/.github/workflows/sample_build.yml)
-- [square/leakcanary](https://github.com/square/leakcanary/tree/main/.github/workflows)
-- [hash-checker/hash-checker](https://github.com/hash-checker/hash-checker/tree/master/.github/workflows)
-- [hash-checker/hash-checker-lite](https://github.com/hash-checker/hash-checker-lite/tree/master/.github/workflows)
-- [Kiwix/kiwix-android](https://github.com/kiwix/kiwix-android/blob/develop/.github/workflows)
-- [wikimedia/apps-android-wikipedia](https://github.com/wikimedia/apps-android-wikipedia/blob/main/.github/workflows)
-- [google/android-fhir](https://github.com/google/android-fhir/tree/master/.github/workflows)
-- [google/accompanist](https://github.com/google/accompanist/blob/main/.github/workflows)
-- [dotanuki-labs/norris](https://github.com/dotanuki-labs/norris/blob/master/.github/workflows/main.yml)
-- [tinylog-org/tinylog](https://github.com/tinylog-org/tinylog/blob/v3.0/.github/workflows/build.yaml)
-- [hzi-braunschweig/SORMAS-Project](https://github.com/hzi-braunschweig/SORMAS-Project/blob/development/.github/workflows/sormas_app_ci.yml)
-- [ACRA/acra](https://github.com/ACRA/acra/blob/master/.github/workflows/test.yml)
-- [bitfireAT/davx5-ose](https://github.com/bitfireAT/davx5-ose/blob/dev-ose/.github/workflows/test-dev.yml)
-- [robolectric/robolectric](https://github.com/robolectric/robolectric/blob/master/.github/workflows/tests.yml)
-- [home-assistant/android](https://github.com/home-assistant/android/blob/master/.github/workflows/pr.yml)
-- [composablehorizons/compose-unstyled](https://github.com/composablehorizons/compose-unstyled/tree/main/.github/workflows)
-- [f3d-app/f3d-android](https://github.com/f3d-app/f3d-android/blob/master/.github/workflows/ci.yml)
-- [freeorion/freeorion](https://github.com/freeorion/freeorion/blob/master/.github/workflows/_build-android.yml)
-
-If you are using **Android Emulator Runner** and want your project included in the list, please feel free to open a pull request.
