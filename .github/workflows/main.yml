@@ -18,32 +18,7 @@ jobs:
     timeout-minutes: 15
     strategy:
       matrix:
-        include:
-          - os: ubuntu-22.04
-            api-level: 23
-            target: default
-            arch: x86
-          - os: ubuntu-24.04
-            api-level: 24
-            target: playstore
-            arch: x86
-          - os: macos-15-intel
-            api-level: 31
-            target: default
-            arch: x86_64
-          - os: ubuntu-24.04
-            api-level: 34
-            target: aosp_atd
-            arch: x86_64
-          - os: ubuntu-latest
-            api-level: 35
-            target: google_apis
-            arch: x86_64
-          - os: ubuntu-latest
-            api-level: 34-ext10
-            target: android-automotive
-            arch: x86_64
-            system-image-api-level: 34-ext9
+        include: ${{ fromJSON(github.actor == 'dependabot[bot]' && '[{"os":"ubuntu-latest","api-level":35,"target":"google_apis","arch":"x86_64"}]' || '[{"os":"ubuntu-22.04","api-level":23,"target":"default","arch":"x86"},{"os":"ubuntu-24.04","api-level":24,"target":"playstore","arch":"x86"},{"os":"macos-15-intel","api-level":31,"target":"default","arch":"x86_64"},{"os":"ubuntu-24.04","api-level":34,"target":"aosp_atd","arch":"x86_64"},{"os":"ubuntu-latest","api-level":35,"target":"google_apis","arch":"x86_64"},{"os":"ubuntu-latest","api-level":"34-ext10","target":"android-automotive","arch":"x86_64","system-image-api-level":"34-ext9"}]') }}
 
     steps:
     - name: checkout
