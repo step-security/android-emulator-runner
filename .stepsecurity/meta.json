@@ -1,0 +1,18 @@
+{
+   "schema_version": "1",
+   "onboarding_type": "copied",
+   "archived": false,
+   "maintained_action_name": "step-security/android-emulator-runner",
+   "upstream_full_repo_name": "reactivecircus/android-emulator-runner",
+   "action_type": "node",
+   "last_release": {
+     "tag_name": "v2.37.0",
+     "created_at": "2026-06-03T11:41:45Z",
+     "published_at": "2026-06-03T20:51:06Z"
+   },
+   "sync": {
+     "ignore_presets": [
+       "defaults_v1"
+     ]
+   }
+ }
