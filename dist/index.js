@@ -39879,7 +39879,7 @@ const io = __importStar(__nccwpck_require__(4994));
 const tc = __importStar(__nccwpck_require__(3472));
 const crypto = __importStar(__nccwpck_require__(6982));
 const fs = __importStar(__nccwpck_require__(9896));
-const BUILD_TOOLS_VERSION = '36.0.0';
+const BUILD_TOOLS_VERSION = '37.0.0';
 // SDK command-line tools 20.0
 const CMDLINE_TOOLS_URL_MAC = 'https://dl.google.com/android/repository/commandlinetools-mac-14742923_latest.zip';
 const CMDLINE_TOOLS_URL_LINUX = 'https://dl.google.com/android/repository/commandlinetools-linux-14742923_latest.zip';
